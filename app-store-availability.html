@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>App Store Availability</title>
+<style>
+:root { color-scheme: light; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #1e293b; background: #f4f7fb; }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 32px 20px; }
+body.modal-open { overflow: hidden; }
+main { max-width: 1320px; margin: auto; }
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+.site-nav { display: flex; gap: 8px; margin-bottom: 20px; padding: 5px; width: fit-content; border: 1px solid #dce3ee; border-radius: 11px; background: white; box-shadow: 0 8px 32px #0f172a06; }
+.site-nav a { padding: 8px 12px; border-radius: 7px; color: #475569; font-size: .88rem; font-weight: 650; text-decoration: none; transition: background-color 160ms ease, color 160ms ease; }
+.site-nav a:hover { background: #f1f5f9; color: #0f172a; }
+.site-nav a[aria-current="page"] { background: #eaf1ff; color: #1d4ed8; }
+.site-nav a:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+.page-header { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 16px; }
+h1 { margin: 0; font-size: clamp(2rem, 3vw, 2.15rem); letter-spacing: -.04em; color: #0f172a; }
+h2, h3 { color: #0f172a; }
+p { line-height: 1.6; }
+.intro { max-width: 760px; color: #526176; margin: 5px 0 0; }
+.header-actions { flex: 0 0 auto; }
+.results-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+.results-summary { display: grid; gap: 3px; }
+.toolbar-timestamp { color: #64748b; font-size: .83rem; }
+.toolbar-actions { display: flex; gap: 9px; }
+.button { min-height: 40px; padding: 9px 14px; border: 1px solid transparent; border-radius: 9px; background: #2563eb; color: white; font-weight: 700; }
+.button:hover { background: #1d4ed8; }
+.button.secondary { border-color: #cbd5e1; background: white; color: #334155; }
+.button.secondary:hover { background: #f8fafc; }
+.button.danger { border-color: #fecaca; background: white; color: #b91c1c; }
+.button.danger:hover { background: #fef2f2; }
+.button.small { min-height: 34px; padding: 6px 11px; font-size: .83rem; }
+.button.edit-action { min-height: 32px; padding: 5px 8px; border-color: transparent; background: transparent; color: #526176; font-size: .8rem; font-weight: 650; }
+.button.edit-action:hover { background: #f1f5f9; color: #1e40af; }
+.button.edit-action:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+.filters { display: grid; grid-template-columns: minmax(300px, 2fr) repeat(4, minmax(140px, 1fr)); gap: 12px; margin-bottom: 14px; padding: 18px; border: 1px solid #dce3ee; border-radius: 14px; background: white; box-shadow: 0 8px 32px #0f172a06; }
+.field { display: grid; gap: 6px; }
+.field label, .field-label { color: #475569; font-size: .76rem; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; }
+.field input, .field select { width: 100%; min-height: 42px; padding: 9px 11px; border: 1px solid #cbd5e1; border-radius: 8px; color: #0f172a; background: white; }
+.field select { appearance: none; padding-right: 38px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='m5 7.5 5 5 5-5' stroke='%2364758b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px; }
+.field input:focus, .field select:focus { outline: 3px solid #bfdbfe; border-color: #60a5fa; }
+.table-wrap { overflow-x: auto; border: 1px solid #dce3ee; border-radius: 14px; background: white; box-shadow: 0 8px 32px #0f172a06; }
+table { border-collapse: collapse; width: 100%; text-align: left; }
+.availability-table-wrap table { table-layout: fixed; min-width: 980px; }
+.availability-table-wrap thead th:first-child { width: 230px; }
+.availability-table-wrap thead th:nth-child(2) { width: 145px; }
+.availability-table-wrap .actions-heading { width: 78px; }
+caption { text-align: left; padding: 18px 22px; font-weight: 650; border-bottom: 1px solid #e2e8f0; }
+thead { background: #eef3f9; color: #475569; font-size: .8rem; }
+th, td { padding: 9px 16px; border-bottom: 1px solid #edf1f6; vertical-align: top; }
+.availability-table-wrap tbody tr { height: 60px; }
+tbody th { min-width: 190px; color: #0f172a; font-weight: 650; }
+tbody tr:last-child > * { border-bottom: none; }
+tbody tr:hover { background: #f8faff; }
+.mode { display: inline-block; padding: 3px 8px; border: 1px solid #e2e8f0; border-radius: 999px; background: #f8fafc; color: #526176; font-size: .74rem; font-weight: 650; white-space: nowrap; }
+.availability-cell { min-width: 0; }
+.availability-state { display: flex; align-items: center; gap: 6px; margin-top: 5px; color: #166534; font-size: .79rem; font-weight: 400; line-height: 1.35; }
+.availability-state.unavailable { margin-top: 0; color: #64748b; font-weight: 600; }
+.state-icon { display: inline-grid; place-items: center; width: 16px; height: 16px; flex: 0 0 auto; border-radius: 50%; background: #dcfce7; color: #15803d; font-size: .67rem; }
+.unavailable .state-icon { background: #f1f5f9; color: #64748b; }
+.tenant-list { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 0; }
+.tenant { padding: 2px 6px; border: 1px solid #dbeafe; border-radius: 6px; background: #eff6ff; color: #334155; font-size: .72rem; font-weight: 650; line-height: 1.35; }
+.available-without-tenants { color: #334155; font-size: .79rem; font-weight: 650; line-height: 1.35; }
+.actions { white-space: nowrap; }
+.empty-state { padding: 44px 24px; color: #64748b; text-align: center; }
+.availability-cards { display: none; }
+.app-card { min-width: 0; padding: 16px; border: 1px solid #dce3ee; border-radius: 14px; background: white; box-shadow: 0 8px 32px #0f172a06; }
+.app-card-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.app-card-header h2 { min-width: 0; margin: 0; font-size: 1.05rem; overflow-wrap: anywhere; }
+.app-card-mode { margin: 10px 0 0; }
+.store-groups { display: grid; gap: 10px; margin-top: 14px; }
+.store-group { min-width: 0; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc; }
+.store-group h3 { margin: 0 0 8px; color: #475569; font-size: .78rem; letter-spacing: .04em; text-transform: uppercase; }
+.modal-backdrop { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 20px; background: #0f172a99; }
+.modal-backdrop[hidden] { display: none; }
+.modal { width: min(760px, 100%); max-height: calc(100vh - 40px); overflow: auto; border-radius: 16px; background: white; box-shadow: 0 24px 80px #0f172a55; }
+.modal.wide { width: min(1080px, 100%); }
+.modal-header { display: flex; align-items: start; justify-content: space-between; gap: 20px; padding: 20px 24px; border-bottom: 1px solid #e2e8f0; }
+.modal-header h2 { margin: 0; font-size: 1.25rem; }
+.modal-header p { margin: 5px 0 0; color: #64748b; font-size: .86rem; }
+.icon-button { display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 8px; background: #f1f5f9; color: #475569; font-size: 1.35rem; }
+.modal-body { padding: 22px 24px; }
+.modal-footer { display: flex; justify-content: space-between; gap: 12px; padding: 16px 24px; border-top: 1px solid #e2e8f0; }
+.modal-footer-right { display: flex; gap: 9px; margin-left: auto; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.store-editor-list { display: grid; gap: 12px; margin-top: 18px; }
+.store-editor { padding: 15px; border: 1px solid #dce3ee; border-radius: 11px; background: #f8fafc; }
+.store-editor-head { display: flex; justify-content: space-between; gap: 18px; align-items: center; margin-bottom: 12px; }
+.store-editor-head strong { color: #0f172a; }
+.check-field { display: flex; align-items: center; gap: 8px; color: #334155; font-size: .9rem; font-weight: 650; }
+.check-field input { width: 17px; height: 17px; accent-color: #2563eb; }
+.inline-add { display: flex; gap: 8px; margin-top: 14px; }
+.inline-add input { flex: 1; min-width: 0; padding: 9px 11px; border: 1px solid #cbd5e1; border-radius: 8px; }
+.history-list { display: grid; gap: 10px; margin-bottom: 22px; }
+.history-entry { display: grid; grid-template-columns: 180px 1fr auto; gap: 14px; align-items: start; padding: 14px; border: 1px solid #e2e8f0; border-radius: 10px; }
+.history-entry time { color: #475569; font-size: .84rem; }
+.history-entry strong { display: block; color: #0f172a; }
+.change-list { margin: 6px 0 0; padding-left: 18px; color: #526176; font-size: .82rem; }
+.snapshot-view { padding-top: 18px; border-top: 1px solid #e2e8f0; }
+.snapshot-view[hidden] { display: none; }
+.snapshot-view h3 { margin: 0 0 6px; }
+.snapshot-view p { margin: 0 0 12px; color: #64748b; font-size: .86rem; }
+.snapshot-table-wrap { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 10px; }
+.snapshot-table-wrap th, .snapshot-table-wrap td { padding: 10px 12px; font-size: .82rem; }
+.notice { margin-top: 18px; padding: 13px 16px; border-left: 3px solid #2563eb; border-radius: 4px; background: #eaf1ff; color: #334155; font-size: .87rem; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+@media (max-width: 900px) { .filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } .filters .search-field { grid-column: 1 / -1; } }
+@media (max-width: 640px) { body { padding: 24px 14px; } .site-nav { width: 100%; } .site-nav a { flex: 1; text-align: center; } .page-header { align-items: stretch; flex-direction: column; gap: 14px; } h1 { font-size: clamp(1.625rem, 7vw, 1.75rem); } .header-actions { align-self: flex-start; } .results-toolbar { align-items: stretch; flex-direction: column; } .toolbar-actions { display: grid; grid-template-columns: 1fr 1fr; } .filters, .form-grid { grid-template-columns: 1fr; } .filters .search-field { grid-column: auto; } .availability-table-wrap { display: none; } .availability-cards { display: grid; gap: 12px; } th, td { padding: 12px 14px; } .modal-backdrop { padding: 0; place-items: end center; } .modal { width: 100%; max-height: 94vh; border-radius: 16px 16px 0 0; } .history-entry { grid-template-columns: 1fr; } .modal-footer { align-items: stretch; flex-direction: column; } .modal-footer-right { width: 100%; margin: 0; } .modal-footer-right .button { flex: 1; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
+@media print { body { padding: 0; background: white; } .site-nav, .header-actions, .results-toolbar, .filters, .actions, .modal-backdrop { display: none !important; } .table-wrap { box-shadow: none; overflow: visible; } tr { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<main>
+<nav class="site-nav" aria-label="Tracker pages">
+<a href="release-history.html" id="release-history-link">Release History</a>
+<a href="app-store-availability.html" aria-current="page">App Store Availability</a>
+</nav>
+<header class="page-header">
+<div>
+<h1>App Store Availability</h1>
+<p class="intro">Compare publishing modes and tenant assignments across stores.</p>
+</div>
+<div class="header-actions"><button class="button" type="button" id="add-application">Add application</button></div>
+</header>
+
+<div class="results-toolbar">
+<div class="results-summary">
+<strong id="result-summary">11 applications</strong>
+<span class="toolbar-timestamp">Last updated: <time id="last-updated" datetime="2026-10-30T08:11:00-04:00">October 30, 2026, at 8:11 AM EDT</time></span>
+</div>
+<div class="toolbar-actions">
+<button class="button secondary" type="button" id="view-history">View history</button>
+<button class="button secondary" type="button" id="clear-filters">Clear filters</button>
+</div>
+</div>
+
+<section class="filters" aria-label="Availability filters">
+<div class="field search-field"><label for="search">Search application</label><input id="search" type="search" placeholder="Search by name…"></div>
+<div class="field"><label for="mode-filter">Publish mode</label><select id="mode-filter"><option value="">All modes</option></select></div>
+<div class="field"><label for="store-filter">Store</label><select id="store-filter"><option value="">Any store</option></select></div>
+<div class="field"><label for="tenant-filter">TENANT</label><select id="tenant-filter"><option value="">All tenants</option></select></div>
+<div class="field"><label for="status-filter">Availability</label><select id="status-filter"><option value="">Any status</option><option value="available">Available</option><option value="unavailable">Unavailable</option></select></div>
+</section>
+
+<div class="table-wrap availability-table-wrap" tabindex="0" role="region" aria-label="App Store availability table">
+<table>
+<caption class="visually-hidden" id="availability-caption">11 applications</caption>
+<thead><tr id="table-head"><th scope="col">Application</th><th scope="col">Publish Mode</th></tr></thead>
+<tbody id="availability-rows"></tbody>
+</table>
+</div>
+<section class="availability-cards" id="availability-cards" aria-label="App Store availability applications"></section>
+<p class="notice">Availability reflects the October 30, 2026 record and may not represent current App Store availability. Changes are stored in this browser and do not affect App Store Connect.</p>
+</main>
+
+<div class="modal-backdrop" id="editor-backdrop" hidden>
+<section class="modal" role="dialog" aria-modal="true" aria-labelledby="editor-title">
+<form id="application-form">
+<div class="modal-header"><div><h2 id="editor-title">Add application</h2><p>Set the publishing mode and availability for each store.</p></div><button class="icon-button" type="button" data-close="editor" aria-label="Close editor">×</button></div>
+<div class="modal-body">
+<div class="form-grid">
+<div class="field"><label for="application-name">Application</label><input id="application-name" name="name" required maxlength="100"></div>
+<div class="field"><label for="publish-mode">Publish mode</label><input id="publish-mode" name="publishMode" list="publish-mode-options" required maxlength="60"><datalist id="publish-mode-options"></datalist></div>
+</div>
+<div class="store-editor-list" id="store-editors"></div>
+<div class="inline-add"><label class="visually-hidden" for="new-store-name">New store name</label><input id="new-store-name" placeholder="Add another store"><button class="button secondary" id="add-store" type="button">Add store</button></div>
+</div>
+<div class="modal-footer"><button class="button danger" id="delete-application" type="button" hidden>Delete application</button><div class="modal-footer-right"><button class="button secondary" type="button" data-close="editor">Cancel</button><button class="button" type="submit">Save changes</button></div></div>
+</form>
+</section>
+</div>
+
+<div class="modal-backdrop" id="history-backdrop" hidden>
+<section class="modal wide" role="dialog" aria-modal="true" aria-labelledby="history-title">
+<div class="modal-header"><div><h2 id="history-title">Availability history</h2><p>Snapshots are read-only and never replace the current workspace.</p></div><button class="icon-button" type="button" data-close="history" aria-label="Close history">×</button></div>
+<div class="modal-body"><div class="history-list" id="history-list"></div><section class="snapshot-view" id="snapshot-view" hidden><h3 id="snapshot-title"></h3><p id="snapshot-description"></p><div class="snapshot-table-wrap"><table><thead id="snapshot-head"></thead><tbody id="snapshot-rows"></tbody></table></div></section></div>
+<div class="modal-footer"><div class="modal-footer-right"><button class="button secondary" type="button" data-close="history">Close</button></div></div>
+</section>
+</div>
+
+<script>
+const STORAGE_KEY = "helen-app-store-availability-v1";
+const INITIAL_TIMESTAMP = "2026-10-30T08:11:00-04:00";
+const INITIAL_TIMESTAMP_LABEL = "October 30, 2026, at 8:11 AM EDT";
+
+function initialApplication(id, name, publishMode, helenNow, luna) {
+  return { id, name, publishMode, stores: { "helen-now": helenNow, "luna": luna } };
+}
+
+const initialApplications = [
+  initialApplication("ask-helen", "Ask Helen", "Unlisted", { available: true, tenants: ["CMH", "TGH", "Albany"] }, { available: false, tenants: [] }),
+  initialApplication("ask-helen-enterprise", "Ask Helen Enterprise", "Custom App", { available: true, tenants: ["CMH"] }, { available: false, tenants: [] }),
+  initialApplication("build-helen", "Build Helen", "Custom App", { available: true, tenants: [] }, { available: false, tenants: [] }),
+  initialApplication("go-helen", "Go Helen", "Custom App", { available: true, tenants: ["CMH"] }, { available: true, tenants: ["CMH", "TGH", "Albany"] }),
+  initialApplication("helen-at-home", "Helen at Home", "Unlisted", { available: true, tenants: ["CMH", "TGH", "Albany"] }, { available: false, tenants: [] }),
+  initialApplication("helen-linen", "Helen Linen", "Unlisted", { available: true, tenants: ["CMH", "TGH", "Albany"] }, { available: false, tenants: [] }),
+  initialApplication("helen-podcast", "Helen Podcast", "Unlisted", { available: true, tenants: ["CMH", "TGH", "Albany"] }, { available: false, tenants: [] }),
+  initialApplication("lead-helen", "Lead Helen", "Unlisted", { available: true, tenants: ["CMH", "TGH", "Albany"] }, { available: false, tenants: [] }),
+  initialApplication("one-helen", "One Helen", "Unlisted", { available: true, tenants: ["CMH", "TGH", "Albany"] }, { available: false, tenants: [] }),
+  initialApplication("one-nurse", "One Nurse", "Custom App", { available: true, tenants: [] }, { available: false, tenants: [] }),
+  initialApplication("team-helen", "Team Helen", "Custom App", { available: true, tenants: ["TGH"] }, { available: true, tenants: ["CMH", "TGH", "Albany"] })
+];
+
+function clone(value) { return JSON.parse(JSON.stringify(value)); }
+
+function makeInitialState() {
+  const stores = [{ id: "helen-now", name: "HelenNow Store" }, { id: "luna", name: "Luna Store" }];
+  return {
+    stores,
+    applications: clone(initialApplications),
+    lastUpdated: INITIAL_TIMESTAMP,
+    lastUpdatedLabel: INITIAL_TIMESTAMP_LABEL,
+    verified: false,
+    history: [{ id: "initial-snapshot", timestamp: INITIAL_TIMESTAMP, timestampLabel: INITIAL_TIMESTAMP_LABEL, action: "Initial availability data", changes: [{ field: "Availability data", previous: "Not recorded", next: "Initial data loaded" }], stores: clone(stores), applications: clone(initialApplications) }]
+  };
+}
+
+function normalizeState(candidate) {
+  if (!candidate || !Array.isArray(candidate.stores) || !Array.isArray(candidate.applications) || !Array.isArray(candidate.history)) return makeInitialState();
+  candidate.applications.forEach((application) => {
+    application.stores ||= {};
+    candidate.stores.forEach((store) => { application.stores[store.id] ||= { available: false, tenants: [] }; });
+  });
+  const initialHistory = candidate.history.find((entry) => entry.id === "initial-snapshot");
+  if (initialHistory) {
+    initialHistory.action = "Initial availability data";
+    initialHistory.changes = [{ field: "Availability data", previous: "Not recorded", next: "Initial data loaded" }];
+  }
+  return candidate;
+}
+
+function loadState() {
+  try { return normalizeState(JSON.parse(localStorage.getItem(STORAGE_KEY))); }
+  catch (error) { return makeInitialState(); }
+}
+
+let state = loadState();
+let editingId = null;
+let editorStores = [];
+let lastFocusedElement = null;
+
+const rows = document.querySelector("#availability-rows");
+const cards = document.querySelector("#availability-cards");
+const tableHead = document.querySelector("#table-head");
+const resultSummary = document.querySelector("#result-summary");
+const caption = document.querySelector("#availability-caption");
+const searchInput = document.querySelector("#search");
+const modeFilter = document.querySelector("#mode-filter");
+const storeFilter = document.querySelector("#store-filter");
+const tenantFilter = document.querySelector("#tenant-filter");
+const statusFilter = document.querySelector("#status-filter");
+const editorBackdrop = document.querySelector("#editor-backdrop");
+const historyBackdrop = document.querySelector("#history-backdrop");
+const applicationForm = document.querySelector("#application-form");
+
+function makeId(prefix, text) {
+  const base = text.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || prefix;
+  return `${base}-${Date.now().toString(36)}`;
+}
+
+function currentTimestamp() {
+  const date = new Date();
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  return { iso: date.toISOString(), label: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short", timeZone }).format(date) };
+}
+
+function saveMutation(action, changes) {
+  const timestamp = currentTimestamp();
+  state.lastUpdated = timestamp.iso;
+  state.lastUpdatedLabel = timestamp.label;
+  state.history.unshift({ id: `snapshot-${Date.now()}`, timestamp: timestamp.iso, timestampLabel: timestamp.label, action, changes, stores: clone(state.stores), applications: clone(state.applications) });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  renderAll();
+}
+
+function optionValues(select, values, firstLabel) {
+  const selected = select.value;
+  select.replaceChildren();
+  const first = document.createElement("option");
+  first.value = "";
+  first.textContent = firstLabel;
+  select.append(first);
+  values.forEach(({ value, label }) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    select.append(option);
+  });
+  select.value = Array.from(select.options).some((option) => option.value === selected) ? selected : "";
+}
+
+function collectTenants() {
+  return [...new Set(state.applications.flatMap((application) => Object.values(application.stores).flatMap((store) => store.tenants || [])))].sort((a, b) => a.localeCompare(b));
+}
+
+function renderFilters() {
+  const modes = [...new Set(state.applications.map((application) => application.publishMode))].sort((a, b) => a.localeCompare(b));
+  optionValues(modeFilter, modes.map((mode) => ({ value: mode, label: mode })), "All modes");
+  optionValues(storeFilter, state.stores.map((store) => ({ value: store.id, label: store.name })), "Any store");
+  optionValues(tenantFilter, collectTenants().map((tenant) => ({ value: tenant, label: tenant })), "All tenants");
+  const datalist = document.querySelector("#publish-mode-options");
+  datalist.replaceChildren(...modes.map((mode) => { const option = document.createElement("option"); option.value = mode; return option; }));
+}
+
+function filteredApplications() {
+  const query = searchInput.value.trim().toLowerCase();
+  const storeId = storeFilter.value;
+  return state.applications.filter((application) => {
+    const storeStates = storeId ? [application.stores[storeId] || { available: false, tenants: [] }] : state.stores.map((store) => application.stores[store.id] || { available: false, tenants: [] });
+    const matchesStatus = (store) => !statusFilter.value || (statusFilter.value === "available" ? store.available : !store.available);
+    const storeCriteriaMatch = tenantFilter.value
+      ? storeStates.some((store) => store.available && store.tenants.includes(tenantFilter.value) && matchesStatus(store))
+      : statusFilter.value
+      ? storeStates.some(matchesStatus)
+      : !storeId || storeStates.some((store) => store.available);
+    return (!query || application.name.toLowerCase().includes(query)) && (!modeFilter.value || application.publishMode === modeFilter.value) && storeCriteriaMatch;
+  });
+}
+
+function appendAvailabilityDetails(container, storeState) {
+  if (!storeState.available) {
+    const stateLine = document.createElement("div");
+    stateLine.className = "availability-state unavailable";
+    const icon = document.createElement("span");
+    icon.className = "state-icon";
+    icon.setAttribute("aria-hidden", "true");
+    icon.textContent = "—";
+    stateLine.append(icon, "Unavailable");
+    container.append(stateLine);
+  } else if (storeState.tenants.length) {
+    const tenants = document.createElement("div");
+    tenants.className = "tenant-list";
+    storeState.tenants.forEach((tenantName) => { const tenant = document.createElement("span"); tenant.className = "tenant"; tenant.textContent = tenantName; tenants.append(tenant); });
+    container.append(tenants);
+  } else {
+    const note = document.createElement("div");
+    note.className = "available-without-tenants";
+    note.textContent = "No clients assigned";
+    container.append(note);
+  }
+  if (storeState.available) {
+    const stateLine = document.createElement("div");
+    stateLine.className = "availability-state";
+    const icon = document.createElement("span");
+    icon.className = "state-icon";
+    icon.setAttribute("aria-hidden", "true");
+    icon.textContent = "✓";
+    stateLine.append(icon, "Available");
+    container.append(stateLine);
+  }
+}
+
+function createAvailabilityCell(storeState) {
+  const cell = document.createElement("td");
+  cell.className = "availability-cell";
+  appendAvailabilityDetails(cell, storeState);
+  return cell;
+}
+
+function createEditButton(application) {
+  const edit = document.createElement("button");
+  edit.type = "button";
+  edit.className = "button small edit-action";
+  edit.textContent = "Edit";
+  edit.dataset.editId = application.id;
+  edit.setAttribute("aria-label", `Edit ${application.name}`);
+  return edit;
+}
+
+function renderCards(applications) {
+  cards.replaceChildren();
+  applications.forEach((application) => {
+    const card = document.createElement("article");
+    card.className = "app-card";
+    const header = document.createElement("div");
+    header.className = "app-card-header";
+    const name = document.createElement("h2");
+    name.id = `app-card-${application.id}`;
+    name.textContent = application.name;
+    card.setAttribute("aria-labelledby", name.id);
+    header.append(name, createEditButton(application));
+
+    const modeLine = document.createElement("p");
+    modeLine.className = "app-card-mode";
+    const mode = document.createElement("span");
+    mode.className = "mode";
+    mode.textContent = application.publishMode;
+    modeLine.append(mode);
+
+    const storeGroups = document.createElement("div");
+    storeGroups.className = "store-groups";
+    state.stores.forEach((store) => {
+      const group = document.createElement("section");
+      group.className = "store-group";
+      const heading = document.createElement("h3");
+      heading.textContent = store.name;
+      group.append(heading);
+      appendAvailabilityDetails(group, application.stores[store.id] || { available: false, tenants: [] });
+      storeGroups.append(group);
+    });
+    card.append(header, modeLine, storeGroups);
+    cards.append(card);
+  });
+  if (!applications.length) {
+    const empty = document.createElement("p");
+    empty.className = "app-card empty-state";
+    empty.textContent = "No applications match these filters.";
+    cards.append(empty);
+  }
+}
+
+function renderTable() {
+  tableHead.querySelectorAll(".dynamic-store-heading, .actions-heading").forEach((heading) => heading.remove());
+  state.stores.forEach((store) => { const heading = document.createElement("th"); heading.scope = "col"; heading.className = "dynamic-store-heading"; heading.textContent = store.name; tableHead.append(heading); });
+  const actionsHeading = document.createElement("th"); actionsHeading.scope = "col"; actionsHeading.className = "actions-heading"; actionsHeading.textContent = "Actions"; tableHead.append(actionsHeading);
+  rows.replaceChildren();
+  const applications = filteredApplications();
+  applications.forEach((application) => {
+    const row = document.createElement("tr");
+    const name = document.createElement("th"); name.scope = "row"; name.textContent = application.name; row.append(name);
+    const modeCell = document.createElement("td"); const mode = document.createElement("span"); mode.className = "mode"; mode.textContent = application.publishMode; modeCell.append(mode); row.append(modeCell);
+    state.stores.forEach((store) => row.append(createAvailabilityCell(application.stores[store.id] || { available: false, tenants: [] })));
+    const actionCell = document.createElement("td"); actionCell.className = "actions"; actionCell.append(createEditButton(application)); row.append(actionCell);
+    rows.append(row);
+  });
+  if (!applications.length) {
+    const row = document.createElement("tr"); const cell = document.createElement("td"); cell.colSpan = state.stores.length + 3; cell.className = "empty-state"; cell.textContent = "No applications match these filters."; row.append(cell); rows.append(row);
+  }
+  renderCards(applications);
+  const hasActiveFilters = [searchInput, modeFilter, storeFilter, tenantFilter, statusFilter].some((control) => control.value);
+  const totalLabel = `${state.applications.length} application${state.applications.length === 1 ? "" : "s"}`;
+  const resultLabel = hasActiveFilters ? `${applications.length} of ${totalLabel}` : totalLabel;
+  resultSummary.textContent = resultLabel;
+  caption.textContent = resultLabel;
+}
+
+function renderMetadata() {
+  const lastUpdated = document.querySelector("#last-updated");
+  lastUpdated.dateTime = state.lastUpdated;
+  lastUpdated.textContent = state.lastUpdatedLabel;
+}
+
+function renderAll() { renderFilters(); renderTable(); renderMetadata(); }
+
+function openModal(backdrop) {
+  lastFocusedElement = document.activeElement;
+  backdrop.hidden = false;
+  document.body.classList.add("modal-open");
+  requestAnimationFrame(() => backdrop.querySelector("input, button")?.focus());
+}
+
+function closeModal(backdrop) {
+  backdrop.hidden = true;
+  if (editorBackdrop.hidden && historyBackdrop.hidden) document.body.classList.remove("modal-open");
+  const matchingEditButton = backdrop === editorBackdrop && editingId
+    ? Array.from(document.querySelectorAll(`[data-edit-id="${editingId}"]`)).find((button) => button.offsetParent !== null)
+    : null;
+  const previousTarget = lastFocusedElement && document.contains(lastFocusedElement) && lastFocusedElement.offsetParent !== null
+    ? lastFocusedElement
+    : null;
+  (matchingEditButton || previousTarget || document.querySelector("#add-application"))?.focus();
+}
+
+function renderStoreEditors(application) {
+  const container = document.querySelector("#store-editors");
+  container.replaceChildren();
+  editorStores.forEach((store) => {
+    const storeState = application?.stores[store.id] || { available: false, tenants: [] };
+    const editor = document.createElement("section"); editor.className = "store-editor"; editor.dataset.storeId = store.id;
+    const head = document.createElement("div"); head.className = "store-editor-head"; const name = document.createElement("strong"); name.textContent = store.name;
+    const checkLabel = document.createElement("label"); checkLabel.className = "check-field"; const checkbox = document.createElement("input"); checkbox.type = "checkbox"; checkbox.className = "store-available"; checkbox.checked = storeState.available; checkLabel.append(checkbox, "Available"); head.append(name, checkLabel);
+    const tenantField = document.createElement("div"); tenantField.className = "field"; const label = document.createElement("label"); const inputId = `tenants-${store.id}`; label.htmlFor = inputId; label.textContent = "Assigned tenants"; const tenantInput = document.createElement("input"); tenantInput.id = inputId; tenantInput.className = "store-tenants"; tenantInput.value = storeState.tenants.join(", "); tenantInput.placeholder = "Comma-separated; leave blank if none"; tenantInput.disabled = !storeState.available; checkbox.addEventListener("change", () => { tenantInput.disabled = !checkbox.checked; if (!checkbox.checked) tenantInput.value = ""; }); tenantField.append(label, tenantInput);
+    editor.append(head, tenantField); container.append(editor);
+  });
+}
+
+function openEditor(applicationId = null) {
+  editingId = applicationId;
+  editorStores = clone(state.stores);
+  const application = state.applications.find((item) => item.id === editingId);
+  document.querySelector("#editor-title").textContent = application ? `Edit ${application.name}` : "Add application";
+  document.querySelector("#application-name").value = application?.name || "";
+  document.querySelector("#publish-mode").value = application?.publishMode || "";
+  document.querySelector("#delete-application").hidden = !application;
+  document.querySelector("#new-store-name").value = "";
+  renderStoreEditors(application);
+  openModal(editorBackdrop);
+}
+
+function readStoreEditors() {
+  return Object.fromEntries(Array.from(document.querySelectorAll(".store-editor")).map((editor) => {
+    const tenants = editor.querySelector(".store-tenants").value.split(",").map((value) => value.trim()).filter(Boolean);
+    return [editor.dataset.storeId, { available: editor.querySelector(".store-available").checked, tenants: [...new Set(tenants)] }];
+  }));
+}
+
+function availabilitySummary(application) {
+  return state.stores.map((store) => { const value = application.stores[store.id] || { available: false, tenants: [] }; return `${store.name}: ${value.available ? value.tenants.length ? value.tenants.join(", ") : "Available" : "Unavailable"}`; }).join("; ");
+}
+
+applicationForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const name = document.querySelector("#application-name").value.trim();
+  const publishMode = document.querySelector("#publish-mode").value.trim();
+  const duplicate = state.applications.find((application) => application.name.toLowerCase() === name.toLowerCase() && application.id !== editingId);
+  if (duplicate) { document.querySelector("#application-name").setCustomValidity("An application with this name already exists."); document.querySelector("#application-name").reportValidity(); return; }
+  document.querySelector("#application-name").setCustomValidity("");
+  const stores = readStoreEditors();
+  const addedStores = editorStores.filter((store) => !state.stores.some((existingStore) => existingStore.id === store.id));
+  if (addedStores.length) {
+    state.stores.push(...clone(addedStores));
+    state.applications.forEach((application) => addedStores.forEach((store) => { application.stores[store.id] = { available: false, tenants: [] }; }));
+  }
+  const existing = state.applications.find((application) => application.id === editingId);
+  if (existing) {
+    const previous = clone(existing);
+    existing.name = name; existing.publishMode = publishMode; existing.stores = stores;
+    const changes = [];
+    if (previous.name !== name) changes.push({ field: "Application", previous: previous.name, next: name });
+    if (previous.publishMode !== publishMode) changes.push({ field: "Publish mode", previous: previous.publishMode, next: publishMode });
+    if (JSON.stringify(previous.stores) !== JSON.stringify(stores)) changes.push({ field: "Store availability", previous: availabilitySummary(previous), next: availabilitySummary(existing) });
+    if (addedStores.length) changes.push({ field: "Stores", previous: "No additional stores", next: addedStores.map((store) => store.name).join(", ") });
+    if (!changes.length) { closeModal(editorBackdrop); return; }
+    saveMutation(`Updated ${name}`, changes);
+  } else {
+    const application = { id: makeId("application", name), name, publishMode, stores };
+    state.applications.push(application);
+    saveMutation(`Added ${name}`, [{ field: "Application", previous: "Not present", next: `${name} · ${publishMode} · ${availabilitySummary(application)}` }]);
+  }
+  closeModal(editorBackdrop);
+});
+
+document.querySelector("#add-store").addEventListener("click", () => {
+  const input = document.querySelector("#new-store-name"); const name = input.value.trim();
+  if (!name) { input.focus(); return; }
+  if (editorStores.some((store) => store.name.toLowerCase() === name.toLowerCase())) { input.setCustomValidity("This store already exists."); input.reportValidity(); return; }
+  input.setCustomValidity("");
+  const store = { id: makeId("store", name), name };
+  const draftStores = readStoreEditors();
+  editorStores.push(store);
+  draftStores[store.id] = { available: false, tenants: [] };
+  input.value = "";
+  renderStoreEditors({ stores: draftStores });
+});
+
+document.querySelector("#delete-application").addEventListener("click", () => {
+  const application = state.applications.find((item) => item.id === editingId);
+  if (!application || !window.confirm(`Delete ${application.name}? Its prior snapshots will remain in history.`)) return;
+  state.applications = state.applications.filter((item) => item.id !== editingId);
+  saveMutation(`Deleted ${application.name}`, [{ field: "Application", previous: `${application.name} · ${application.publishMode} · ${availabilitySummary(application)}`, next: "Removed from current data" }]);
+  closeModal(editorBackdrop);
+});
+
+function renderSnapshot(entry) {
+  document.querySelector("#snapshot-view").hidden = false;
+  document.querySelector("#snapshot-title").textContent = entry.action;
+  document.querySelector("#snapshot-description").textContent = `${entry.timestampLabel} · Read-only historical view`;
+  const head = document.querySelector("#snapshot-head"); const snapshotRows = document.querySelector("#snapshot-rows"); head.replaceChildren(); snapshotRows.replaceChildren();
+  const headerRow = document.createElement("tr"); ["Application", "Publish Mode", ...entry.stores.map((store) => store.name)].forEach((label) => { const th = document.createElement("th"); th.scope = "col"; th.textContent = label; headerRow.append(th); }); head.append(headerRow);
+  entry.applications.forEach((application) => { const row = document.createElement("tr"); const name = document.createElement("th"); name.scope = "row"; name.textContent = application.name; row.append(name); const mode = document.createElement("td"); mode.textContent = application.publishMode; row.append(mode); entry.stores.forEach((store) => { const value = application.stores[store.id] || { available: false, tenants: [] }; const cell = document.createElement("td"); cell.textContent = value.available ? value.tenants.length ? value.tenants.join(", ") : "Available" : "Unavailable"; row.append(cell); }); snapshotRows.append(row); });
+  document.querySelector("#snapshot-view").scrollIntoView({ block: "start", behavior: "smooth" });
+}
+
+function openHistory() {
+  const list = document.querySelector("#history-list"); list.replaceChildren(); document.querySelector("#snapshot-view").hidden = true;
+  state.history.forEach((entry) => {
+    const article = document.createElement("article"); article.className = "history-entry";
+    const time = document.createElement("time"); time.dateTime = entry.timestamp; time.textContent = entry.timestampLabel;
+    const details = document.createElement("div"); const title = document.createElement("strong"); title.textContent = entry.action; const changes = document.createElement("ul"); changes.className = "change-list"; entry.changes.forEach((change) => { const item = document.createElement("li"); item.textContent = `${change.field}: ${change.previous} → ${change.next}`; changes.append(item); }); details.append(title, changes);
+    const view = document.createElement("button"); view.type = "button"; view.className = "button secondary small"; view.textContent = "View snapshot"; view.addEventListener("click", () => renderSnapshot(entry));
+    article.append(time, details, view); list.append(article);
+  });
+  openModal(historyBackdrop);
+}
+
+document.querySelector("#add-application").addEventListener("click", () => openEditor());
+document.querySelector("#view-history").addEventListener("click", openHistory);
+rows.addEventListener("click", (event) => { const button = event.target.closest("[data-edit-id]"); if (button) openEditor(button.dataset.editId); });
+cards.addEventListener("click", (event) => { const button = event.target.closest("[data-edit-id]"); if (button) openEditor(button.dataset.editId); });
+[searchInput, modeFilter, storeFilter, tenantFilter, statusFilter].forEach((control) => control.addEventListener(control === searchInput ? "input" : "change", renderTable));
+document.querySelector("#clear-filters").addEventListener("click", () => { searchInput.value = ""; modeFilter.value = ""; storeFilter.value = ""; tenantFilter.value = ""; statusFilter.value = ""; renderTable(); searchInput.focus(); });
+document.querySelectorAll("[data-close]").forEach((button) => button.addEventListener("click", () => closeModal(button.dataset.close === "editor" ? editorBackdrop : historyBackdrop)));
+[editorBackdrop, historyBackdrop].forEach((backdrop) => backdrop.addEventListener("click", (event) => { if (event.target === backdrop) closeModal(backdrop); }));
+document.addEventListener("keydown", (event) => { if (event.key === "Escape") { if (!editorBackdrop.hidden) closeModal(editorBackdrop); else if (!historyBackdrop.hidden) closeModal(historyBackdrop); } });
+window.addEventListener("storage", (event) => { if (event.key === STORAGE_KEY) { state = loadState(); renderAll(); } });
+
+function updateReleaseHistoryLink() {
+  const releaseHistoryUrl = new URL("release-history.html", window.location.href);
+  releaseHistoryUrl.search = window.location.search;
+  releaseHistoryUrl.hash = window.location.hash;
+  document.querySelector("#release-history-link").href = releaseHistoryUrl.href;
+}
+
+window.addEventListener("pageshow", updateReleaseHistoryLink);
+updateReleaseHistoryLink();
+
+renderAll();
+</script>
+</body>
+</html>

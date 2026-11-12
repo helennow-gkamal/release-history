@@ -7,47 +7,96 @@
 <style>
 :root { color-scheme: light; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #1e293b; background: #f4f7fb; }
 * { box-sizing: border-box; }
-body { margin: 0; padding: 48px 20px; }
+body { margin: 0; padding: 32px 20px; }
 main { max-width: 1320px; margin: auto; }
-.eyebrow { color: #2563eb; font-weight: 700; font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; }
-h1 { margin: 12px 0; font-size: clamp(2rem, 5vw, 3rem); letter-spacing: -.04em; color: #0f172a; }
+.site-nav { display: flex; gap: 8px; margin-bottom: 20px; padding: 5px; width: fit-content; border: 1px solid #dce3ee; border-radius: 11px; background: white; box-shadow: 0 8px 32px #0f172a06; }
+.site-nav a { padding: 8px 12px; border-radius: 7px; color: #475569; font-size: .88rem; font-weight: 650; text-decoration: none; transition: background-color 160ms ease, color 160ms ease; }
+.site-nav a:hover { background: #f1f5f9; color: #0f172a; }
+.site-nav a[aria-current="page"] { background: #eaf1ff; color: #1d4ed8; }
+.site-nav a:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+.page-header { margin-bottom: 16px; }
+h1 { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; margin: 0; font-size: clamp(2rem, 3vw, 2.15rem); letter-spacing: -.04em; color: #0f172a; }
+.platform-badge { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 999px; background: #eaf1ff; color: #1d4ed8; font-size: .68rem; font-weight: 750; letter-spacing: .03em; }
 p { line-height: 1.65; }
-.intro { max-width: 740px; color: #526176; margin-bottom: 28px; }
-.app-picker { display: flex; align-items: end; justify-content: space-between; gap: 24px; padding: 18px 20px; margin: 0 0 22px; border: 1px solid #dce3ee; border-radius: 14px; background: white; box-shadow: 0 8px 32px #0f172a06; }
-.app-picker-field { display: grid; gap: 7px; min-width: min(100%, 300px); }
+.intro { max-width: 740px; color: #526176; margin: 5px 0 14px; }
+.app-picker { display: flex; align-items: end; gap: 14px; padding: 12px 14px; margin: 0 0 14px; border: 1px solid #dce3ee; border-radius: 12px; background: white; box-shadow: 0 8px 32px #0f172a06; }
+.app-picker-controls { display: flex; align-items: end; flex: 1; gap: 14px; }
+.app-picker-field { display: grid; flex: 1 1 280px; gap: 6px; min-width: 0; }
 .app-picker label { color: #475569; font-size: .78rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
-.app-picker select { width: 100%; padding: 11px 40px 11px 13px; border: 1px solid #cbd5e1; border-radius: 9px; color: #0f172a; background: white; font: inherit; font-weight: 650; cursor: pointer; }
-.app-picker select:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
-.current-app { margin: 0; color: #526176; font-size: .9rem; text-align: right; }
-.current-app strong { color: #0f172a; }
-.availability { display: inline-block; margin-left: 7px; padding: 3px 8px; border-radius: 999px; background: #fff7ed; color: #9a3412; font-size: .72rem; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; }
-.table-wrap { overflow-x: auto; border: 1px solid #dce3ee; border-radius: 14px; background: white; box-shadow: 0 8px 32px #0f172a06; }
+.app-picker select { width: 100%; padding: 11px 40px 11px 13px; border: 1px solid #cbd5e1; border-radius: 9px; appearance: none; color: #0f172a; background-color: white; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='m5 7.5 5 5 5-5' stroke='%2364758b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px; font: inherit; font-weight: 650; cursor: pointer; }
+.release-search-field { display: grid; flex: 2 1 480px; gap: 6px; max-width: none; }
+.release-search-field[hidden] { display: none; }
+.search-input-row { display: flex; gap: 8px; }
+.search-input-row input { min-width: 0; flex: 1; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 9px; color: #0f172a; background: white; font: inherit; }
+.clear-search { padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 9px; color: #334155; background: white; font: inherit; font-weight: 650; cursor: pointer; }
+.clear-search:hover:not(:disabled) { background: #f8fafc; }
+.clear-search:disabled { color: #94a3b8; cursor: default; }
+.app-picker select:focus-visible, .search-input-row input:focus-visible, .clear-search:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+.release-summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 8px; color: #526176; font-size: .86rem; }
+.release-summary strong { color: #0f172a; }
+.table-wrap { max-height: 2200px; overflow: auto; border: 1px solid #dce3ee; border-radius: 14px; background: white; box-shadow: 0 8px 32px #0f172a06; }
 table { border-collapse: collapse; width: 100%; text-align: left; white-space: nowrap; }
-caption { text-align: left; padding: 20px 24px; font-weight: 650; border-bottom: 1px solid #e2e8f0; }
+caption { text-align: left; padding: 12px 16px; font-weight: 650; border-bottom: 1px solid #e2e8f0; }
 thead { background: #eef3f9; color: #475569; font-size: .8rem; }
-th, td { padding: 13px 24px; border-bottom: 1px solid #edf1f6; }
+thead th { position: sticky; top: 0; z-index: 2; background: #eef3f9; box-shadow: 0 1px 0 #dce3ee; }
+th, td { padding: 10px 16px; border-bottom: 1px solid #edf1f6; }
 .timezone { color: #64748b; font-weight: 500; }
 tbody th { font-weight: 600; color: #0f172a; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
 thead th:nth-child(3), tbody td:nth-child(3) { text-align: right; }
 tbody tr:last-child > * { border-bottom: none; }
 tbody tr:hover { background: #f8faff; }
 .status { display: inline-block; padding: 4px 10px; background: #ecfdf5; color: #166534; border-radius: 999px; font-size: .78rem; }
+.status-unverified { background: #fff7ed; color: #9a3412; }
+.notes-unavailable { color: #64748b; }
+.development-notes { min-width: 360px; white-space: normal; }
+.issue-disclosure { max-width: 520px; }
+.issue-summary { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; width: fit-content; padding: 0; border: 0; color: inherit; background: transparent; font: inherit; cursor: pointer; }
+.issue-summary::after { content: "View details"; color: #2563eb; font-size: .8rem; font-weight: 650; }
+.issue-summary[aria-expanded="true"]::after { content: "Hide details"; }
+.issue-summary:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; border-radius: 4px; }
+.issue-panel { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows 280ms ease, opacity 220ms ease; }
+.issue-disclosure.is-open .issue-panel { grid-template-rows: 1fr; opacity: 1; }
+.issue-panel-inner { min-height: 0; overflow: hidden; }
+.issue-badge { display: inline-block; padding: 4px 9px; border-radius: 999px; font-size: .75rem; font-weight: 700; }
+.issue-badge-known { background: #fef3c7; color: #92400e; }
+.issue-list { margin: 12px 0 2px; padding: 0; list-style: none; }
+.issue-list li { padding: 8px 0; border-top: 1px solid #e2e8f0; line-height: 1.35; }
+.issue-list code { color: #334155; font-weight: 700; }
 .empty-state { padding: 42px 24px; color: #64748b; text-align: center; white-space: normal; }
+.release-cards { display: none; }
+.release-card { padding: 14px 16px; border: 1px solid #dce3ee; border-radius: 12px; background: white; box-shadow: 0 8px 32px #0f172a06; }
+.release-card + .release-card { margin-top: 10px; }
+.release-card-header { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+.release-card-version { margin: 0; color: #0f172a; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: .98rem; }
+.release-card-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 7px; color: #526176; font-size: .84rem; }
+.release-card-notes, .release-card-development { margin-top: 12px; font-size: .86rem; }
+.release-card-development { color: #526176; }
+.release-card .issue-disclosure { max-width: none; }
+.unverified-section { margin-top: 22px; }
+.unverified-section[hidden] { display: none; }
+.unverified-section h2 { margin: 0 0 6px; font-size: 1.1rem; }
+.unverified-section > p { margin: 0 0 12px; color: #64748b; font-size: .88rem; }
+.unverified-table-wrap { max-height: none; }
 .note { margin-top: 22px; padding: 16px 20px; background: #eaf1ff; border-left: 3px solid #2563eb; border-radius: 4px; font-size: .9rem; }
 footer { font-size: .8rem; color: #64748b; margin-top: 22px; }
 a { color: #2563eb; }
-@media (max-width: 600px) { body { padding: 28px 14px; } .app-picker { align-items: stretch; flex-direction: column; } .current-app { text-align: left; } th, td { padding: 12px 16px; } }
-@media print { body { padding: 0; background: white; } .app-picker { display: none; } .table-wrap { box-shadow: none; overflow: visible; } th, td { padding: 7px 12px; } thead { display: table-header-group; } tr { break-inside: avoid; } }
+@media (max-width: 600px) { body { padding: 24px 14px; } h1 { font-size: clamp(1.625rem, 7vw, 1.75rem); } .app-picker { align-items: stretch; flex-direction: column; } .app-picker-controls { align-items: stretch; flex-direction: column; gap: 10px; } .app-picker-field, .release-search-field { flex-basis: auto; } .release-search-field { max-width: none; } .release-summary { align-items: start; } #release-table-region, .unverified-table-wrap { display: none; } .release-cards { display: block; } th, td { padding: 12px 16px; } }
+@media (prefers-reduced-motion: reduce) { .issue-panel { transition: none; } }
+@media print { body { padding: 0; background: white; } .app-picker { display: none; } .table-wrap { max-height: none; box-shadow: none; overflow: visible; } th, td { padding: 7px 12px; } thead { display: table-header-group; } thead th { position: static; box-shadow: none; } tr { break-inside: avoid; } }
 </style>
 </head>
 <body>
 <main>
-<header>
-<div class="eyebrow"><span id="eyebrow-app">Go Helen</span> · iOS</div>
-<h1><span id="heading-app">Go Helen</span> Release History</h1>
-<p class="intro">When each release first reached <strong>Ready for Distribution</strong> or, for older releases, <strong>Ready for Sale</strong>. Times are shown in Beirut time.</p>
+<nav class="site-nav" aria-label="Tracker pages">
+<a href="release-history.html" aria-current="page">Release History</a>
+<a href="app-store-availability.html" id="availability-link">App Store Availability</a>
+</nav>
+<header class="page-header">
+<h1><span id="heading-app">Go Helen</span> Release History <span class="platform-badge" id="heading-platform">iOS</span></h1>
+<p class="intro">When each release first reached <strong>Ready for Distribution</strong> or, for older releases, <strong>Ready for Sale</strong>.</p>
 </header>
 <section class="app-picker" aria-labelledby="app-picker-label">
+<div class="app-picker-controls">
 <div class="app-picker-field">
 <label id="app-picker-label" for="app-select">App</label>
 <select id="app-select">
@@ -55,6 +104,7 @@ a { color: #2563eb; }
 <option value="ask-helen-kids">Ask Helen Kids — Not Live</option>
 <option value="build-helen">Build Helen</option>
 <option value="go-helen" selected>Go Helen</option>
+<option value="go-helen-desktop">Go Helen Desktop</option>
 <option value="helen-assistant">Helen Assistant — Not Live</option>
 <option value="helen-at-home">Helen at Home</option>
 <option value="helen-exec">Helen Exec — Not Live</option>
@@ -66,12 +116,20 @@ a { color: #2563eb; }
 <option value="team-helen">Team Helen</option>
 </select>
 </div>
-<p class="current-app" id="current-app" aria-live="polite"><strong>Go Helen</strong> is selected</p>
+<div class="release-search-field" id="release-search-field">
+<label for="release-search">Search version or build</label>
+<div class="search-input-row">
+<input type="search" id="release-search" autocomplete="off" placeholder="For example, 2.4.209 or 3">
+<button type="button" class="clear-search" id="clear-release-search" disabled>Clear</button>
+</div>
+</div>
+</div>
 </section>
+<div class="release-summary"><strong id="release-summary">41 releases · newest first</strong><span>Beirut time</span></div>
 <div class="table-wrap" id="release-table-region" tabindex="0" role="region" aria-label="Go Helen release history table">
 <table>
-<caption id="release-caption">41 releases · newest first</caption>
-<thead><tr><th scope="col">Release</th><th scope="col">Ready date</th><th scope="col">Time</th><th scope="col">Recorded status</th><th scope="col">In-app release notes</th><th scope="col">Development release notes</th></tr></thead>
+<caption class="visually-hidden" id="release-caption">41 releases · newest first</caption>
+<thead id="release-table-head"><tr><th scope="col">Release</th><th scope="col">Ready</th><th scope="col">Recorded status</th><th scope="col">In-app release notes</th><th scope="col">Development release notes</th></tr></thead>
 <tbody id="release-rows">
 <tr><th scope="row">2.4.209 (3)</th><td><time datetime="2026-08-05T10:55:00">Aug 5, 2026</time></td><td>10:55 AM</td><td><span class="status">Ready for Distribution</span></td><td><a href="https://bennettranville.blob.core.windows.net/go-helen/release-notes/en-US/2.4.209(3).html" target="_blank" rel="noopener" aria-label="Release notes for 2.4.209 (3)">View notes</a></td><td></td></tr>
 <tr><th scope="row">2.4.142 (1)</th><td><time datetime="2026-06-01T09:49:00">Jun 1, 2026</time></td><td>9:49 AM</td><td><span class="status">Ready for Distribution</span></td><td><a href="https://bennettranville.blob.core.windows.net/go-helen/release-notes/en-US/2.4.142(1).html" target="_blank" rel="noopener" aria-label="Release notes for 2.4.142 (1)">View notes</a></td><td></td></tr>
@@ -117,6 +175,19 @@ a { color: #2563eb; }
 </tbody>
 </table>
 </div>
+<section class="release-cards" id="release-cards" aria-label="Release history cards"></section>
+<section class="unverified-section" id="unverified-section" aria-labelledby="unverified-heading" hidden>
+<h2 id="unverified-heading">Distribution unverified</h2>
+<p>This build has release notes, but no verified Ready for Distribution date. It is excluded from the verified release count.</p>
+<div class="table-wrap unverified-table-wrap" tabindex="0" role="region" aria-label="Distribution unverified releases table">
+<table>
+<caption id="unverified-caption">1 distribution-unverified build</caption>
+<thead id="unverified-table-head"><tr><th scope="col">Release</th><th scope="col">Ready</th><th scope="col">Recorded status</th><th scope="col">In-app release notes</th><th scope="col">Development release notes</th></tr></thead>
+<tbody id="unverified-release-rows"></tbody>
+</table>
+</div>
+<section class="release-cards" id="unverified-release-cards" aria-label="Distribution unverified release cards"></section>
+</section>
 <div id="app-notes"><p class="note"><strong>Version 1.0.15:</strong> First ready for sale on Apr 7, 2023 at 8:40 PM. It returned to <strong>Ready for Sale</strong> on Jul 5, 2023 at 12:17 PM, following a <strong>Pending Agreement</strong> status.</p></div>
 <footer id="source-footer">Source: <a href="gohelenversionhistory.txt" target="_blank" rel="noopener">gohelenversionhistory.txt</a></footer>
 </main>
@@ -214,11 +285,40 @@ const releaseHistories = {
       "<strong>Version 1.0.15:</strong> First ready for sale on Apr 7, 2023 at 8:40 PM. It returned to <strong>Ready for Sale</strong> on Jul 5, 2023 at 12:17 PM, following a <strong>Pending Agreement</strong> status."
     ]
   },
+  "go-helen-desktop": {
+    name: "Go Helen Desktop",
+    platform: "Desktop",
+    source: null,
+    releases: [
+      { version: "2.4.307(1)", datetime: "2026-11-09T09:05:00", date: "Nov 9, 2026", time: "9:05 AM", status: "Ready for Distribution", notesHref: null, developmentNotes: "" }
+    ],
+    notices: []
+  },
   "helen-at-home": {
     name: "Helen at Home",
     platform: "iOS",
     source: { label: "helen_at_home_distribution_history.md", href: "helen_at_home_distribution_history.md" },
     releases: [
+      {
+        version: "2.4.300 (1)",
+        datetime: "2026-10-29T12:17:00",
+        date: "Oct 29, 2026",
+        time: "12:17 PM",
+        status: "Ready for Distribution",
+        notesHref: null,
+        developmentNotes: "",
+        developmentIssues: [
+          { id: "7638", title: "When switching a language, scheduling a request does not fully translate the date and time" },
+          { id: "7631", title: "Localization: Welcome Message Displayed in English for Certain Languages" },
+          { id: "7514", title: "Policies Documents Are Not Translated When Switching the App Language" },
+          { id: "7350", title: "Previous language persists after switching languages" },
+          { id: "7329", title: "Account: Working hours missing for real units HH_01 v10" },
+          { id: "7032", title: "Empty notifications are displayed for video call events in Helen at Home" },
+          { id: "7165", title: "Command group contains untranslated English words when the Helen at Home language is changed" },
+          { id: "6859", title: "Recently sent doodles are not displayed anywhere in the application after they are submitted" }
+        ],
+        newest: true
+      },
       { version: "2.4.251 (2)", datetime: "2026-09-16T17:09:00", date: "Sep 16, 2026", time: "5:09 PM", status: "Ready for Distribution", notesHref: null, developmentNotes: "" },
       { version: "2.4.232 (1)", datetime: "2026-08-20T07:28:00", date: "Aug 20, 2026", time: "7:28 AM", status: "Ready for Distribution", notesHref: null, developmentNotes: "" },
       { version: "2.4.230 (1)", datetime: "2026-08-19T07:36:00", date: "Aug 19, 2026", time: "7:36 AM", status: "Ready for Distribution", notesHref: null, developmentNotes: "" },
@@ -229,6 +329,7 @@ const releaseHistories = {
       { version: "2.4.187 (1)", datetime: "2026-07-06T19:44:00", date: "Jul 6, 2026", time: "7:44 PM", status: "Ready for Distribution", notesHref: null, developmentNotes: "" },
       { version: "1.0", datetime: "2026-07-06T10:57:00", date: "Jul 6, 2026", time: "10:57 AM", status: "Ready for Distribution", notesHref: null, developmentNotes: "" }
     ],
+    unverifiedReleases: [],
     notices: []
   },
   "helen-linen": {
@@ -342,18 +443,142 @@ const releaseHistories = {
 
 const appSelect = document.querySelector("#app-select");
 const headingApp = document.querySelector("#heading-app");
-const eyebrowApp = document.querySelector("#eyebrow-app");
-const currentApp = document.querySelector("#current-app");
+const headingPlatform = document.querySelector("#heading-platform");
 const releaseCaption = document.querySelector("#release-caption");
+const releaseSummary = document.querySelector("#release-summary");
 const tableRegion = document.querySelector("#release-table-region");
+const releaseTableHead = document.querySelector("#release-table-head");
+const releaseCards = document.querySelector("#release-cards");
 const appNotes = document.querySelector("#app-notes");
 const sourceFooter = document.querySelector("#source-footer");
+const availabilityLink = document.querySelector("#availability-link");
+const releaseSearchField = document.querySelector("#release-search-field");
+const releaseSearch = document.querySelector("#release-search");
+const clearReleaseSearch = document.querySelector("#clear-release-search");
+const unverifiedSection = document.querySelector("#unverified-section");
+const unverifiedCaption = document.querySelector("#unverified-caption");
+const unverifiedReleaseRows = document.querySelector("#unverified-release-rows");
+const unverifiedTableHead = document.querySelector("#unverified-table-head");
+const unverifiedReleaseCards = document.querySelector("#unverified-release-cards");
 
 function addCell(row, text) {
   const cell = document.createElement("td");
   cell.textContent = text;
   row.append(cell);
   return cell;
+}
+
+function releaseReadyLabel(release) {
+  return release.date && release.time ? `${release.date} · ${release.time}` : release.date || release.time || "—";
+}
+
+let issuePanelSequence = 0;
+
+function renderDevelopmentNotes(release) {
+  const cell = document.createElement("td");
+  cell.className = "development-notes";
+
+  if (!release.developmentIssues?.length) {
+    if (release.developmentNotes) {
+      cell.textContent = release.developmentNotes;
+    } else {
+      const unavailable = document.createElement("span");
+      unavailable.className = "notes-unavailable";
+      unavailable.textContent = "No development notes available.";
+      cell.append(unavailable);
+    }
+    return cell;
+  }
+
+  const disclosure = document.createElement("div");
+  disclosure.className = "issue-disclosure";
+  const summary = document.createElement("button");
+  summary.type = "button";
+  summary.className = "issue-summary";
+  summary.setAttribute("aria-expanded", "false");
+  const knownBadge = document.createElement("span");
+  knownBadge.className = "issue-badge issue-badge-known";
+  knownBadge.textContent = `Known issues (${release.developmentIssues.length})`;
+  summary.append(knownBadge);
+
+  const panel = document.createElement("div");
+  panel.className = "issue-panel";
+  panel.id = `issue-panel-${++issuePanelSequence}`;
+  panel.setAttribute("aria-hidden", "true");
+  summary.setAttribute("aria-controls", panel.id);
+  const panelInner = document.createElement("div");
+  panelInner.className = "issue-panel-inner";
+
+  const issueList = document.createElement("ul");
+  issueList.className = "issue-list";
+  release.developmentIssues.forEach((issue) => {
+    const item = document.createElement("li");
+    const issueNumber = document.createElement("code");
+    issueNumber.textContent = `#${issue.id}`;
+    item.append(issueNumber, ` — ${issue.title}`);
+    issueList.append(item);
+  });
+
+  panelInner.append(issueList);
+  panel.append(panelInner);
+  disclosure.append(summary, panel);
+  summary.addEventListener("click", () => {
+    const isOpen = disclosure.classList.toggle("is-open");
+    summary.setAttribute("aria-expanded", String(isOpen));
+    panel.setAttribute("aria-hidden", String(!isOpen));
+  });
+  cell.append(disclosure);
+  return cell;
+}
+
+function renderReleaseNotes(release, app) {
+  const container = document.createElement("div");
+  container.className = "release-card-notes";
+  if (release.notesHref) {
+    const link = document.createElement("a");
+    link.href = release.notesHref;
+    link.textContent = "View notes";
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.setAttribute("aria-label", `Release notes for ${app.name} ${release.version}`);
+    container.append(link);
+  } else {
+    const unavailable = document.createElement("span");
+    unavailable.className = "notes-unavailable";
+    unavailable.setAttribute("aria-label", "No release notes available");
+    unavailable.textContent = "—";
+    container.append(unavailable);
+  }
+  return container;
+}
+
+function renderReleaseCard(release, app) {
+  const card = document.createElement("article");
+  card.className = "release-card";
+  const header = document.createElement("div");
+  header.className = "release-card-header";
+  const version = document.createElement("h2");
+  version.className = "release-card-version";
+  version.textContent = release.version;
+  header.append(version);
+  const meta = document.createElement("div");
+  meta.className = "release-card-meta";
+  const ready = document.createElement("span");
+  ready.textContent = releaseReadyLabel(release);
+  meta.append(ready);
+  if (release.status) {
+    const status = document.createElement("span");
+    status.className = `status${release.distributionVerified === false ? " status-unverified" : ""}`;
+    status.textContent = release.status;
+    meta.append(status);
+  }
+  const notes = renderReleaseNotes(release, app);
+  const developmentCell = renderDevelopmentNotes(release);
+  const development = document.createElement("div");
+  development.className = "release-card-development";
+  development.append(...developmentCell.childNodes);
+  card.append(header, meta, notes, development);
+  return card;
 }
 
 function renderRelease(release, app) {
@@ -364,79 +589,138 @@ function renderRelease(release, app) {
   row.append(releaseHeader);
 
   const dateCell = document.createElement("td");
-  const dateElement = document.createElement("time");
-  dateElement.dateTime = release.datetime;
-  dateElement.textContent = release.date;
-  dateCell.append(dateElement);
+  dateCell.className = "release-ready";
+  if (release.datetime && release.date) {
+    const dateElement = document.createElement("time");
+    dateElement.dateTime = release.datetime;
+    dateElement.textContent = releaseReadyLabel(release);
+    dateCell.append(dateElement);
+  } else {
+    dateCell.textContent = releaseReadyLabel(release);
+  }
   row.append(dateCell);
 
-  addCell(row, release.time);
-
   const statusCell = document.createElement("td");
-  const status = document.createElement("span");
-  status.className = "status";
-  status.textContent = release.status;
-  statusCell.append(status);
+  if (release.status) {
+    const status = document.createElement("span");
+    status.className = `status${release.distributionVerified === false ? " status-unverified" : ""}`;
+    status.textContent = release.status;
+    statusCell.append(status);
+  } else {
+    statusCell.textContent = "—";
+  }
   row.append(statusCell);
 
   const notesCell = document.createElement("td");
-  if (release.notesHref) {
-    const link = document.createElement("a");
-    link.href = release.notesHref;
-    link.textContent = "View notes";
-    link.target = "_blank";
-    link.rel = "noopener";
-    link.setAttribute("aria-label", `Release notes for ${app.name} ${release.version}`);
-    notesCell.append(link);
-  } else {
-    const unavailable = document.createElement("span");
-    unavailable.setAttribute("aria-label", "No release notes available");
-    unavailable.textContent = "—";
-    notesCell.append(unavailable);
-  }
+  const notes = renderReleaseNotes(release, app);
+  notesCell.append(...notes.childNodes);
   row.append(notesCell);
 
-  addCell(row, release.developmentNotes);
+  row.append(renderDevelopmentNotes(release));
   return row;
+}
+
+function getBuildNumber(version) {
+  const match = version.match(/\(\s*([^)]+?)\s*\)\s*$/);
+  return match ? match[1].trim() : "";
+}
+
+function matchesReleaseSearch(release, query) {
+  const trimmedQuery = query.trim();
+  if (!trimmedQuery) return true;
+  if (/^\d+$/.test(trimmedQuery)) {
+    return getBuildNumber(release.version) === trimmedQuery;
+  }
+  const normalizedQuery = trimmedQuery.replace(/\s+/g, "").toLowerCase();
+  const normalizedVersion = release.version.replace(/\s+/g, "").toLowerCase();
+  return normalizedVersion.includes(normalizedQuery);
 }
 
 function renderApp(appId) {
   const app = releaseHistories[appId] || releaseHistories["go-helen"];
-  const releases = [...app.releases].sort((left, right) => right.datetime.localeCompare(left.datetime));
+  const releases = [...app.releases].sort((left, right) => {
+    if (left.newest !== right.newest) return left.newest ? -1 : 1;
+    return (right.datetime || "").localeCompare(left.datetime || "");
+  });
+  const unverifiedReleases = [...(app.unverifiedReleases || [])].sort((left, right) => (right.version || "").localeCompare(left.version || ""));
+  const searchQuery = releaseSearch.value.trim();
+  const visibleReleases = releases.filter((release) => matchesReleaseSearch(release, searchQuery));
+  const visibleUnverifiedReleases = unverifiedReleases.filter((release) => matchesReleaseSearch(release, searchQuery));
 
   document.title = `${app.name} Release History`;
   headingApp.textContent = app.name;
-  eyebrowApp.textContent = app.name;
-  currentApp.replaceChildren();
-  const currentAppName = document.createElement("strong");
-  currentAppName.textContent = app.name;
-  currentApp.append(currentAppName, " is selected");
-  if (app.isLive === false) {
-    const availability = document.createElement("span");
-    availability.className = "availability";
-    availability.textContent = "Not Live";
-    currentApp.append(availability);
-  }
+  headingPlatform.textContent = app.platform;
   tableRegion.setAttribute("aria-label", `${app.name} release history table`);
-  releaseCaption.textContent = app.isLive === false
+  releaseSearchField.hidden = releases.length === 0 && unverifiedReleases.length === 0;
+  clearReleaseSearch.disabled = !searchQuery;
+  const summaryText = app.isLive === false
     ? `${app.name} · Not Live`
     : releases.length
-    ? `${releases.length} release${releases.length === 1 ? "" : "s"} · newest first`
+    ? searchQuery
+      ? `${visibleReleases.length} of ${releases.length} release${releases.length === 1 ? "" : "s"} · newest first`
+      : `${releases.length} release${releases.length === 1 ? "" : "s"} · newest first`
     : `${app.name} · no releases yet`;
+  releaseCaption.textContent = summaryText;
+  releaseSummary.textContent = summaryText;
+
+  [releaseTableHead, unverifiedTableHead].forEach((head) => {
+    head.replaceChildren();
+    const row = document.createElement("tr");
+    ["Release", "Ready", "Recorded status", "In-app release notes", "Development release notes"].forEach((label) => {
+      const cell = document.createElement("th");
+      cell.scope = "col";
+      cell.textContent = label;
+      row.append(cell);
+    });
+    head.append(row);
+  });
 
   releaseRows.replaceChildren();
-  if (releases.length) {
-    releases.forEach((release) => releaseRows.append(renderRelease(release, app)));
+  if (visibleReleases.length) {
+    visibleReleases.forEach((release) => releaseRows.append(renderRelease(release, app)));
+  } else if (releases.length && searchQuery) {
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+    cell.colSpan = 5;
+    cell.className = "empty-state";
+    cell.textContent = visibleUnverifiedReleases.length
+      ? "No verified releases match your search"
+      : "No releases match your search";
+    row.append(cell);
+    releaseRows.append(row);
   } else {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
-    cell.colSpan = 6;
+    cell.colSpan = 5;
     cell.className = "empty-state";
     cell.textContent = app.isLive === false
       ? `${app.name} is not live yet. No release history is available.`
       : `No release history has been added for ${app.name} yet.`;
     row.append(cell);
     releaseRows.append(row);
+  }
+
+  releaseCards.replaceChildren();
+  if (visibleReleases.length) {
+    visibleReleases.forEach((release) => releaseCards.append(renderReleaseCard(release, app)));
+  } else {
+    const emptyCard = document.createElement("p");
+    emptyCard.className = "release-card empty-state";
+    emptyCard.textContent = app.isLive === false
+      ? `${app.name} is not live yet. No release history is available.`
+      : searchQuery
+      ? visibleUnverifiedReleases.length ? "No verified releases match your search" : "No releases match your search"
+      : `No release history has been added for ${app.name} yet.`;
+    releaseCards.append(emptyCard);
+  }
+
+  unverifiedReleaseRows.replaceChildren();
+  unverifiedReleaseCards.replaceChildren();
+  unverifiedSection.hidden = visibleUnverifiedReleases.length === 0;
+  if (visibleUnverifiedReleases.length) {
+    unverifiedCaption.textContent = `${visibleUnverifiedReleases.length} distribution-unverified build${visibleUnverifiedReleases.length === 1 ? "" : "s"}`;
+    visibleUnverifiedReleases.forEach((release) => unverifiedReleaseRows.append(renderRelease(release, app)));
+    visibleUnverifiedReleases.forEach((release) => unverifiedReleaseCards.append(renderReleaseCard(release, app)));
   }
 
   appNotes.replaceChildren();
@@ -463,15 +747,49 @@ function renderApp(appId) {
   }
 }
 
+function selectApp(appId, updateUrl = false) {
+  const selectedAppId = Object.prototype.hasOwnProperty.call(releaseHistories, appId)
+    ? appId
+    : "go-helen";
+  const pageUrl = new URL(window.location.href);
+  pageUrl.searchParams.set("app", selectedAppId);
+
+  if (updateUrl) {
+    window.history.replaceState({ app: selectedAppId }, "", pageUrl.href);
+  }
+
+  const availabilityUrl = new URL("app-store-availability.html", pageUrl);
+  availabilityUrl.search = pageUrl.search;
+  availabilityUrl.hash = pageUrl.hash;
+  availabilityLink.href = availabilityUrl;
+  appSelect.value = selectedAppId;
+  renderApp(selectedAppId);
+}
+
+function restoreAppFromUrl() {
+  const pageUrl = new URL(window.location.href);
+  selectApp(pageUrl.searchParams.get("app"));
+}
+
 appSelect.addEventListener("change", () => {
+  releaseSearch.value = "";
+  selectApp(appSelect.value, true);
+});
+
+releaseSearch.addEventListener("input", () => {
   renderApp(appSelect.value);
 });
 
-window.addEventListener("pageshow", () => {
+clearReleaseSearch.addEventListener("click", () => {
+  releaseSearch.value = "";
   renderApp(appSelect.value);
+  releaseSearch.focus();
 });
 
-renderApp(appSelect.value);
+window.addEventListener("pageshow", restoreAppFromUrl);
+window.addEventListener("popstate", restoreAppFromUrl);
+
+restoreAppFromUrl();
 </script>
 </body>
 </html>

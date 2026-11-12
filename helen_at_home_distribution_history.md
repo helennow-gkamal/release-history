@@ -8,6 +8,7 @@ Dates and times are transcribed exactly as displayed in App Store Connect. The H
 
 | Version | Distribution status shown | Date | Time |
 | --- | --- | --- | --- |
+| 2.4.300 (1) | Ready for Distribution | Oct 29, 2026 | 12:17 PM |
 | 2.4.251 (2) | Ready for Distribution | Sep 16, 2026 | 5:09 PM |
 | 2.4.232 (1) | Ready for Distribution | Aug 20, 2026 | 7:28 AM |
 | 2.4.230 (1) | Ready for Distribution | Aug 19, 2026 | 7:36 AM |

@@ -34,14 +34,15 @@ The following details describe the existing implementation, rather than addition
 ## Multi-app release history
 
 - Keep one main `release-history.html` page; do not create separate release-history pages for each app.
-- Keep the app selector alphabetized: **Ask Helen**, **Ask Helen Kids**, **Build Helen**, **Go Helen**, **Helen Assistant**, **Helen at Home**, **Helen Exec**, **Helen Linen**, **Helen Podcast**, **Lead Helen**, **One Helen**, **One Nurse**, and **Team Helen**. Do not add other apps until the user requests them.
+- Keep the app selector alphabetized: **Ask Helen**, **Ask Helen Kids**, **Build Helen**, **Go Helen**, **Go Helen Desktop**, **Helen Assistant**, **Helen at Home**, **Helen Exec**, **Helen Linen**, **Helen Podcast**, **Lead Helen**, **One Helen**, **One Nurse**, and **Team Helen**. Do not add other apps until the user requests them.
 - Mark **Ask Helen Kids**, **Helen Exec**, and **Helen Assistant** as **Not Live** in the selector and selected-app view. Keep their release histories empty until authoritative data is supplied.
 - Keep each app's metadata, releases, source, and notices separate so selecting an app displays only that app's history.
 - Preserve all existing Go Helen releases and release-notes links.
 - Team Helen has 28 releases sourced from `team-helen-versions.md`. Use the earliest ready event for version 1.0.3 and preserve the note about its later return after Pending Agreement.
 - Team Helen's source supplies eight remote detailed release-notes URLs; retain those exact links, and show unavailable markers for releases without a supplied link.
 - Build Helen has two releases sourced from `build-helen-versions.md`; retain its source values and leave notes cells blank or unavailable until matching notes are supplied.
-- Helen at Home has nine releases sourced from `helen_at_home_distribution_history.md`; retain its source values and leave notes cells blank or unavailable until matching notes are supplied.
+- Go Helen Desktop has one release supplied directly by the user; leave its source unavailable until an authoritative source document is supplied.
+- Helen at Home has ten releases sourced from `helen_at_home_distribution_history.md`; retain its source values and leave notes cells blank or unavailable until matching notes are supplied.
 - Helen Linen has three releases sourced from `helen_linen_distribution_history.md`; retain its source values and leave notes cells blank or unavailable until matching notes are supplied.
 - Helen Podcast has two releases sourced from `# Helen Podcast — iOS Distribution Histo.md`; sort them newest to oldest and leave notes cells blank or unavailable until matching notes are supplied.
 - Lead Helen has four releases sourced from `# Lead Helen — iOS Distribution History.md`; preserve its three supplied detailed release-notes links and show an unavailable marker for the release explicitly lacking notes.
